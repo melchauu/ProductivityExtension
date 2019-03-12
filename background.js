@@ -9,11 +9,20 @@ chrome.runtime.onInstalled.addListener(function() {
 
 chrome.windows.onFocusChanged.addListener((windowId) => {
     console.log("Newly focused window: " + windowId);
-    // if newly focused window === -1 then the browser is not in focus, this means other applications like the file browser is active
+    if (windowId > -1) {
+        chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+            if (tabs && tabs.length > 0) {
+                console.log("Existing focused tab :" + tabs[0].id + " url: " + tabs[0].url);
+            }
+        });
+    }
 });
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
-    console.log("Newly focused window: " + activeInfo. windowId + ". Newly focused tab: " + activeInfo.tabId);
+    console.log("Current window: " + activeInfo. windowId + ". Newly focused tab: " + activeInfo.tabId);
+    chrome.tabs.get(activeInfo.tabId, (tab) => {
+        console.log("TabId :" + tab.id + " url: " + tab.url);
+    })
 });
 /*
 
