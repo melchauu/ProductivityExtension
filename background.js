@@ -9,36 +9,38 @@ chrome.runtime.onInstalled.addListener(function() {
 
 chrome.windows.onFocusChanged.addListener((windowId) => {
     console.log("Newly focused window: " + windowId);
-    if (windowId > -1) {
+    if (windowId !== -1) {
         chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
             if (tabs && tabs.length > 0) {
-                console.log("Existing focused tab :" + tabs[0].id + " url: " + tabs[0].url);
+                console.log("Existing focused tab :" + tabs[0].id + " url: " + getDomain(tabs[0].url));
             }
         });
-    }
+    } /*else {
+        chrome.storage.sync.set({'value': theValue}, function() {
+            // Notify that we saved.
+            message('Settings saved');
+        });
+    }*/
 });
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
     console.log("Current window: " + activeInfo. windowId + ". Newly focused tab: " + activeInfo.tabId);
     chrome.tabs.get(activeInfo.tabId, (tab) => {
-        console.log("TabId :" + tab.id + " url: " + tab.url);
+        console.log("TabId :" + tab.id + " url: " + getDomain(tab.url));
     })
 });
-/*
 
-chrome.windows.onFocusChanged.addListener(function () {});
-//fire when active tab changeddd
-//chrome.tabs.onActivated.addListener(function callback)
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+    // read changeInfo data and do something with it (like read the url)
+    if (changeInfo.url) {
+        console.log("New Url for tab :" + tab.id + "  is : " + getDomain(changeInfo.url));
+        // do something here
 
-// actually fire when active tab changed
-//https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
+    }
+});
 
-//https://developer.chrome.com/extensions/windows
-onFocusChanged -> returns   chrome.windows.WINDOW_ID_NONE if all Chrome windows have lost focus
+function getDomain(tabUrl) {
+    var url = new URL(tabUrl);
+    return url.hostname;
+}
 
-chrome.tabs.onCreated.addListener(function callback)
-
-//document.URL // gives current url
-https://developer.chrome.com/extensions/background_pages
-
-*/
