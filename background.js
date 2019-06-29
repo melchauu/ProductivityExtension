@@ -54,7 +54,7 @@ import  { CurrentTab } from './classes/CurrentTab.js';
 				let domainConfig;
                 currentTab = new CurrentTab(domain, currTime);
 				if (isEmpty(result)) {
-					 domainConfig = {
+					domainConfig = {
 						[domain]: {
                             lastAccessTime: currTime,
 							endTime: null,
@@ -64,7 +64,7 @@ import  { CurrentTab } from './classes/CurrentTab.js';
 
 				} else {
 					debugger;
-					result.lastAccessTime = currTime;
+                    result[domain].lastAccessTime = currTime;
                     domainConfig = result;
 
 				}
