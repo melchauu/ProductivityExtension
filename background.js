@@ -1,6 +1,7 @@
 import  { CurrentTab } from './classes/CurrentTab.js';
 
 (function tabTrackingInit() {
+	var currentTab;
 
 	chrome.runtime.onInstalled.addListener(function () {
 		chrome.storage.sync.set({color: '#3aa757'}, function () {
@@ -31,27 +32,47 @@ import  { CurrentTab } from './classes/CurrentTab.js';
 		chrome.tabs.get(activeInfo.tabId, (tab) => {
 			var domain = getDomain(tab.url);
 			console.log("TabId :" + tab.id + " url: " + domain);
+            let currTime = new Date().getTime();
+
+            if (currentTab) {
+                // calculate how much time we spent on the last website
+                let newElapsedTime = currTime - currentTab.lastAccessTime;
+                chrome.storage.sync.get([currentTab.domain], function (result) {
+                    if (!isEmpty(result)) {
+                        let domainConfig = {
+                            [domain]: {
+                                lastAccessTime: currTime,
+                                totalElapsed: result.totalElapsed + newElapsedTime
+                            }
+                        };
+                        chrome.storage.sync.set(domainConfig);
+                    }
+                });
+            }
 
 			chrome.storage.sync.get([domain], function (result) {
-				// Notify that we saved.
-				debugger;
-				console.log(result);
+				let domainConfig;
+                currentTab = new CurrentTab(domain, currTime);
 				if (isEmpty(result)) {
-					var domainConfig = {
+					 domainConfig = {
 						[domain]: {
-							startTime: new Date().getTime(),
+                            lastAccessTime: currTime,
 							endTime: null,
 							totalElasped: 0
 						}
 					};
-					chrome.storage.sync.set(domainConfig, function () {
-						// Notify that we saved.
-						debugger;
-						console.log('Settings saved');
-					});
+
 				} else {
-					//result.
+					debugger;
+					result.lastAccessTime = currTime;
+                    domainConfig = result;
+
 				}
+                chrome.storage.sync.set(domainConfig, function () {
+                    // Notify that we saved.
+                    debugger;
+                    console.log('Settings saved');
+                });
 
 			});
 

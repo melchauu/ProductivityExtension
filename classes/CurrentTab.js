@@ -5,15 +5,6 @@ class CurrentTab {
 		this.lastAccessTime = lastAccessTime;
 	}
 
-	getDomain() {
-		return this.domain;
-	}
-
-	setDomain(newDomain) {
-		this.domain = newDomain;
-	}
-
-
 }
 
 export {CurrentTab};
